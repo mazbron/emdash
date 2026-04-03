@@ -10,9 +10,9 @@ cd /app/demos/simple
 if [ ! -f "data.db" ]; then
     echo "data.db not found. Running bootstrap..."
     # Bypass passkey auth during dev setup or run normal init if this is production
-    # emdash init will setup the schema, emdash seed will put dummy content in
-    # However, running the emdash script using the project's locally built dependencies is safer.
-    pnpm --filter emdash-demo bootstrap
+    # We run the emdash CLI directly to avoid any pnpm binary resolution issues in Alpine
+    node /app/packages/core/dist/cli/index.mjs init
+    node /app/packages/core/dist/cli/index.mjs seed
 else
     echo "Existing data.db found. Skipping bootstrap."
 fi
