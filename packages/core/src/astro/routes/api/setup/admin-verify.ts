@@ -44,7 +44,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 		}
 
 		// Get setup state
-		const setupState = await options.get("emdash:setup_state");
+		const setupState = await options.get<{ step: string; email: string; name: string | null }>("emdash:setup_state");
 
 		if (!setupState || setupState.step !== "admin") {
 			return apiError("INVALID_STATE", "Invalid setup state. Please restart setup.", 400);
@@ -55,9 +55,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
 		if (isParseError(body)) return body;
 
 		// Get passkey config
-		const url = new URL(request.url);
 		const siteName = (await options.get<string>("emdash:site_title")) ?? undefined;
-		const passkeyConfig = getPasskeyConfig(url, siteName);
+		const passkeyConfig = getPasskeyConfig(request, siteName);
 
 		// Verify the registration response
 		const challengeStore = createChallengeStore(emdash.db);

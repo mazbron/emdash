@@ -34,10 +34,9 @@ export const POST: APIRoute = async ({ request, locals, session }) => {
 		const adapter = createKyselyAdapter(emdash.db);
 
 		// Get passkey config
-		const url = new URL(request.url);
 		const options = new OptionsRepository(emdash.db);
 		const siteName = (await options.get<string>("emdash:site_title")) ?? undefined;
-		const passkeyConfig = getPasskeyConfig(url, siteName);
+		const passkeyConfig = getPasskeyConfig(request, siteName);
 
 		// Verify the passkey registration response
 		const challengeStore = createChallengeStore(emdash.db);
