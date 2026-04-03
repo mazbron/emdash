@@ -12,7 +12,8 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages packages/
 COPY demos demos/
 COPY templates templates/
-# This ensures that we install dependencies efficiently
+# This ensures that we install dependencies efficiently and SSR modules resolve
+RUN echo "shamefully-hoist=true" >> .npmrc
 RUN pnpm install --frozen-lockfile
 
 # Builder
