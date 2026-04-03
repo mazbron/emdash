@@ -55,10 +55,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
 		if (isParseError(body)) return body;
 
 		// Get passkey config
-		const url = new URL(request.url);
 		const optionsRepo = new OptionsRepository(emdash.db);
 		const siteName = (await optionsRepo.get<string>("emdash:site_title")) ?? undefined;
-		const passkeyConfig = getPasskeyConfig(url, siteName);
+		const passkeyConfig = getPasskeyConfig(request, siteName);
 
 		// Verify the registration response
 		const challengeStore = createChallengeStore(emdash.db);

@@ -59,10 +59,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
 		// If no email provided, allowCredentials will be undefined (allow any discoverable credential)
 
 		// Get passkey config
-		const url = new URL(request.url);
 		const options = new OptionsRepository(emdash.db);
 		const siteName = (await options.get<string>("emdash:site_title")) ?? undefined;
-		const passkeyConfig = getPasskeyConfig(url, siteName);
+		const passkeyConfig = getPasskeyConfig(request, siteName);
 
 		// Generate authentication options
 		const challengeStore = createChallengeStore(emdash.db);

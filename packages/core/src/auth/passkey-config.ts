@@ -13,15 +13,26 @@ export interface PasskeyConfig {
 }
 
 /**
- * Get passkey configuration from request URL
+ * Get passkey configuration from request
  *
- * @param url The request URL
+ * @param request The request object
  * @param siteName Optional site name for rpName (defaults to hostname)
  */
-export function getPasskeyConfig(url: URL, siteName?: string): PasskeyConfig {
+export function getPasskeyConfig(request: Request, siteName?: string): PasskeyConfig {
+	const url = new URL(request.url);
+
+	const forwardedHost = request.headers.get("x-forwarded-host");
+	const forwardedProto = request.headers.get("x-forwarded-proto");
+	const hostHeader = request.headers.get("host");
+
+	const actualHost = forwardedHost || hostHeader || url.host;
+	const realHostname = actualHost.split(":")[0] || url.hostname;
+	const actualProto = forwardedProto || url.protocol.replace(":", "");
+	const origin = `${actualProto}://${actualHost}`;
+
 	return {
-		rpName: siteName || url.hostname,
-		rpId: url.hostname,
-		origin: url.origin,
+		rpName: siteName || realHostname,
+		rpId: realHostname,
+		origin,
 	};
 }
