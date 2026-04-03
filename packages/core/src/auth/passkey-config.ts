@@ -19,20 +19,31 @@ export interface PasskeyConfig {
  * @param siteName Optional site name for rpName (defaults to hostname)
  */
 export function getPasskeyConfig(request: Request, siteName?: string): PasskeyConfig {
-	const url = new URL(request.url);
+	let trueUrl: URL;
+	const originHeader = request.headers.get("origin");
+	const refererHeader = request.headers.get("referer");
 
-	const forwardedHost = request.headers.get("x-forwarded-host");
-	const forwardedProto = request.headers.get("x-forwarded-proto");
-	const hostHeader = request.headers.get("host");
+	if (originHeader) {
+		trueUrl = new URL(originHeader);
+	} else if (refererHeader) {
+		trueUrl = new URL(refererHeader);
+	} else {
+		// Fallback for non-browser requests or missing headers
+		const url = new URL(request.url);
+		
+		const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0].trim();
+		const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0].trim();
+		const hostHeader = request.headers.get("host")?.split(",")[0].trim();
 
-	const actualHost = forwardedHost || hostHeader || url.host;
-	const realHostname = actualHost.split(":")[0] || url.hostname;
-	const actualProto = forwardedProto || url.protocol.replace(":", "");
-	const origin = `${actualProto}://${actualHost}`;
+		const actualHost = forwardedHost || hostHeader || url.host;
+		const actualProto = forwardedProto || url.protocol.replace(":", "");
+		
+		trueUrl = new URL(`${actualProto}://${actualHost}`);
+	}
 
 	return {
-		rpName: siteName || realHostname,
-		rpId: realHostname,
-		origin,
+		rpName: siteName || trueUrl.hostname,
+		rpId: trueUrl.hostname,
+		origin: trueUrl.origin,
 	};
 }
