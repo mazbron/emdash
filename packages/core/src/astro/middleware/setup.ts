@@ -52,7 +52,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
 			if (!isComplete) {
 				// Redirect to setup wizard
-				return context.redirect("/_emdash/admin/setup");
+				return new Response(null, { status: 302, headers: { Location: "/_emdash/admin/setup" } });
 			}
 
 			// Check auth mode - user verification differs by mode
@@ -70,14 +70,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
 				if (userCount.count === 0) {
 					// No users - need to complete admin creation
-					return context.redirect("/_emdash/admin/setup");
+					return new Response(null, { status: 302, headers: { Location: "/_emdash/admin/setup" } });
 				}
 			}
 		} catch (error) {
 			// If the options table doesn't exist yet, redirect to setup
 			// This handles fresh installations where migrations haven't run
 			if (error instanceof Error && error.message.includes("no such table")) {
-				return context.redirect("/_emdash/admin/setup");
+				return new Response(null, { status: 302, headers: { Location: "/_emdash/admin/setup" } });
 			}
 
 			// Other errors - let the admin handle them

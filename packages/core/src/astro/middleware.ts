@@ -218,7 +218,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 					setupVerified = true;
 				} catch {
 					// Table doesn't exist -> fresh database, redirect to setup
-					return context.redirect("/_emdash/admin/setup");
+					return new Response(null, { status: 302, headers: { Location: "/_emdash/admin/setup" } });
 				}
 			}
 
