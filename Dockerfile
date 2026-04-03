@@ -19,8 +19,9 @@ RUN pnpm install --frozen-lockfile
 FROM deps AS builder
 WORKDIR /app
 COPY . .
-# Emdash requires all packages to be built first, including the demo
+# Emdash requires all packages to be built first, then we build the demo
 RUN pnpm build
+RUN pnpm --filter emdash-demo build
 
 # Runner
 FROM base AS runner
